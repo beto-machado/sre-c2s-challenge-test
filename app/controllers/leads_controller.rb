@@ -60,7 +60,14 @@ class LeadsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_lead
-      @lead = Lead.find(params[:id])
+      @lead = Lead.find_by(id: params[:id])
+
+      unless @lead
+        respond_to do |format|
+          format.html { redirect_to leads_url, notice: t("notices.lead_not_found") }
+          format.json { render json: { error: t("notices.lead_not_found") }, status: :not_found }
+        end
+      end
     end
 
     # Only allow a list of trusted parameters through.
