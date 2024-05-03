@@ -19,4 +19,10 @@ class LeadTest < ActiveSupport::TestCase
     lead = Lead.new(name: "John Doe", email: "valid@email.com")
     assert lead.save
   end
+
+  test "should not save the lead with an existing email" do
+    Lead.create(name: "John Doe", email: "valid@email.com")
+    lead = Lead.new(name: "Test", email: "valid@email.com")
+    assert_not lead.save
+  end
 end
