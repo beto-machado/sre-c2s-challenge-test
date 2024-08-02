@@ -25,7 +25,7 @@ class LeadsController < ApplicationController
 
     respond_to do |format|
       if @lead.save
-        format.html { redirect_to lead_url(@lead), notice: "Lead was successfully created." }
+        format.html { redirect_to lead_url(@lead), notice: t("notices.created_lead") }
         format.json { render :show, status: :created, location: @lead }
       else
         format.html { render :new, status: :unprocessable_entity }
@@ -38,7 +38,7 @@ class LeadsController < ApplicationController
   def update
     respond_to do |format|
       if @lead.update(lead_params)
-        format.html { redirect_to lead_url(@lead), notice: "Lead was successfully updated." }
+        format.html { redirect_to lead_url(@lead), notice: t("notices.updated_lead") }
         format.json { render :show, status: :ok, location: @lead }
       else
         format.html { render :edit, status: :unprocessable_entity }
@@ -52,7 +52,7 @@ class LeadsController < ApplicationController
     @lead.destroy!
 
     respond_to do |format|
-      format.html { redirect_to leads_url, notice: "Lead was successfully destroyed." }
+      format.html { redirect_to leads_url, notice: t("notices.destroyed_lead") }
       format.json { head :no_content }
     end
   end
@@ -60,11 +60,18 @@ class LeadsController < ApplicationController
   private
     # Use callbacks to share common setup or constraints between actions.
     def set_lead
-      @lead = Lead.find(params[:id])
+      @lead = Lead.find_by(id: params[:id])
+
+      unless @lead
+        respond_to do |format|
+          format.html { redirect_to leads_url, notice: t("notices.lead_not_found") }
+          format.json { render json: { error: t("notices.lead_not_found") }, status: :not_found }
+        end
+      end
     end
 
     # Only allow a list of trusted parameters through.
     def lead_params
-      params.require(:lead).permit(:email)
+      params.require(:lead).permit(:name, :email, :phone)
     end
 end
